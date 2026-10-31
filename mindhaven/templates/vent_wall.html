@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Empathy Wall — MindHaven{% endblock %}
+
+{% block content %}
+<div style="max-width: 760px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">🤍</div>
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.4rem;">
+            The Empathy Wall
+        </h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+            Real, anonymous thoughts from people navigating life. No comments, no judgment—only silent kindness.
+        </p>
+        <div style="margin-top: 1.2rem;">
+            <a href="{{ url_for('shredder') }}" class="btn btn-sage" style="font-size: 0.9rem; padding: 0.6rem 1.4rem;">
+                + Share Your Anonymous Thought
+            </a>
+        </div>
+    </div>
+
+    <div class="vent-list">
+        {% if vents %}
+            {% for vent in vents %}
+                <div class="vent-card">
+                    <div class="vent-header">
+                        <span class="vent-tag">{{ vent.emotion_tag }}</span>
+                        <span class="vent-time">{{ vent.created_at.strftime('%B %d, %H:%M') if vent.created_at else 'Recently' }}</span>
+                    </div>
+
+                    <p class="vent-content">
+                        "{{ vent.content }}"
+                    </p>
+
+                    <div class="vent-footer">
+                        <form method="POST" action="{{ url_for('react_vent', vent_id=vent.id, reaction_type='hug') }}">
+                            <button type="submit" class="reaction-btn {% if vent.has_hugged %}reacted{% endif %}">
+                                <span>🫂</span>
+                                <span>Send a Hug ({{ vent.hugs_count }})</span>
+                            </button>
+                        </form>
+
+                        <form method="POST" action="{{ url_for('react_vent', vent_id=vent.id, reaction_type='support') }}">
+                            <button type="submit" class="reaction-btn {% if vent.has_supported %}reacted{% endif %}">
+                                <span>🤍</span>
+                                <span>You're Not Alone ({{ vent.support_count }})</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="card" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                <p>The empathy wall is quiet right now. Feel free to be the first to share an anonymous thought.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MindHaven — Your Emotional Sanctuary{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('index') }}" class="brand">
+            <span class="brand-icon">🌿</span>
+            <span>MindHaven</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('grounding') }}" class="nav-panic-btn">
+                <span>🫁</span>
+                <span>Panic SOS</span>
+            </a>
+
+            <a href="{{ url_for('calm_zone') }}" class="nav-link" style="color: var(--sage-dark); font-weight: 700;">
+                🫧 Zen Oasis
+            </a>
+
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Sanctuary</a>
+                <a href="{{ url_for('diary') }}" class="nav-link">📖 My Diary</a>
+                <a href="{{ url_for('shredder') }}" class="nav-link">Thought Shredder</a>
+                <a href="{{ url_for('vent_wall') }}" class="nav-link">Empathy Wall</a>
+                <a href="{{ url_for('analytics') }}" class="nav-link">Insights</a>
+                <a href="{{ url_for('logout') }}" class="nav-link" style="color: #94A3B8;">Sign Out</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav-link">Sign In</a>
+                <a href="{{ url_for('register') }}" class="btn btn-sage" style="padding: 0.45rem 1rem;">Begin Sanctuary</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="flash-msg flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer style="text-align: center; padding: 2rem; color: #94A3B8; font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: auto;">
+        <p>🌿 MindHaven — A confidential space for mental well-being and mindful emotional awareness.</p>
+        <p style="margin-top: 0.3rem;">If you are in immediate emotional crisis, please reach out to trusted professional helplines.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Create Sanctuary — MindHaven{% endblock %}
+
+{% block content %}
+<div style="max-width: 460px; margin: 3rem auto;">
+    <div class="card" style="text-align: center; padding: 2.5rem;">
+        <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">🌱</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 0.5rem;">Begin Your Journey</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem;">
+            A judgment-free space. You can use an anonymous pseudonym to protect your complete privacy.
+        </p>
+
+        <form method="POST" action="{{ url_for('register') }}" style="text-align: left;">
+            <div style="margin-bottom: 1.25rem;">
+                <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem; color: var(--text-secondary);">Choose a Username / Pseudonym</label>
+                <input type="text" name="username" class="form-input" placeholder="e.g. quiet_wanderer" required>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem; color: var(--text-secondary);">Create a Password</label>
+                <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn btn-sage" style="width: 100%; padding: 0.85rem;">
+                Create My Sanctuary 🌿
+            </button>
+        </form>
+
+        <div style="margin-top: 1.8rem; font-size: 0.9rem; color: var(--text-secondary);">
+            Already have a space? <a href="{{ url_for('login') }}" style="color: var(--sage-dark); font-weight: 700; text-decoration: none;">Sign in here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

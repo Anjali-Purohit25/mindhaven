@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Sanctuary Dashboard — MindHaven{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+    <div>
+        <span style="font-size: 0.9rem; font-weight: 700; color: var(--sage); text-transform: uppercase; letter-spacing: 1px;">
+            Daily Mindful Sanctuary
+        </span>
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; color: #1F2937; margin-top: 0.2rem;">
+            Peace be with you, {{ username }}.
+        </h1>
+    </div>
+    <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-secondary);">
+        📅 {{ today_str }}
+    </div>
+</div>
+
+<!-- Quick Sanctuary Shortcuts Grid (4 items now) -->
+<div class="sanctuary-shortcuts" style="grid-template-columns: repeat(4, 1fr);">
+    <a href="{{ url_for('diary') }}" class="shortcut-card">
+        <div class="shortcut-icon">📖</div>
+        <div class="shortcut-title">My Private Diary</div>
+        <div class="shortcut-desc">Encrypted daily journal for your deepest uncensored thoughts.</div>
+    </a>
+
+    <a href="{{ url_for('calm_zone') }}" class="shortcut-card">
+        <div class="shortcut-icon">🫧</div>
+        <div class="shortcut-title">Zen Calm Oasis</div>
+        <div class="shortcut-desc">Ambient rain sounds & bubble wrap sensory fidget relief.</div>
+    </a>
+
+    <a href="{{ url_for('grounding') }}" class="shortcut-card">
+        <div class="shortcut-icon">🫁</div>
+        <div class="shortcut-title">Grounding SOS</div>
+        <div class="shortcut-desc">4-7-8 breathing circle & 5-4-3-2-1 technique for acute panic.</div>
+    </a>
+
+    <a href="{{ url_for('shredder') }}" class="shortcut-card">
+        <div class="shortcut-icon">🔥</div>
+        <div class="shortcut-title">Thought Shredder</div>
+        <div class="shortcut-desc">Incinerate heavy thoughts into the void with zero trace.</div>
+    </a>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Left Column: Mood Logging -->
+    <div>
+        <div class="card">
+            <h2 class="card-title">
+                <span>💭</span>
+                <span>Emotional Check-In</span>
+            </h2>
+
+            {% if today_mood %}
+                <div style="background: var(--sage-light); border-radius: var(--radius-md); padding: 1.4rem; border: 1px solid #D4E4DC; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 800; color: var(--sage-dark); font-size: 1.15rem;">
+                            {{ emotion_meta[today_mood.emotion].emoji }} Today you're feeling {{ today_mood.emotion }}
+                        </span>
+                        <span style="font-size: 0.85rem; font-weight: 700; background: #FFFFFF; padding: 0.2rem 0.6rem; border-radius: 50px; color: var(--sage-dark);">
+                            Intensity: {{ today_mood.intensity }}/10
+                        </span>
+                    </div>
+                    <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.6rem;">
+                        Trigger focus: <strong>{{ today_mood.trigger_category }}</strong>
+                    </div>
+                    {% if today_mood.note %}
+                        <p style="font-style: italic; color: #334155; font-size: 0.95rem;">"{{ today_mood.note }}"</p>
+                    {% endif %}
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                    Want to update or add another reflection for today? Fill below:
+                </p>
+            {% else %}
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem;">
+                    Take a moment to pause. What feelings are moving through your body right now?
+                </p>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('log_mood') }}">
+                <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.6rem; color: var(--text-secondary);">
+                    Select Primary State:
+                </label>
+                <div class="emotion-grid">
+                    {% for emo, meta in emotion_meta.items() %}
+                        <label class="emotion-option">
+                            <input type="radio" name="emotion" value="{{ emo }}" {% if loop.first %}checked{% endif %}>
+                            <div class="emotion-pill">
+                                <span class="emoji">{{ meta.emoji }}</span>
+                                <span class="label">{{ emo }}</span>
+                            </div>
+                        </label>
+                    {% endfor %}
+                </div>
+
+                <div class="slider-container">
+                    <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem; color: var(--text-secondary);">
+                        Emotional Intensity (1 = Mild whisper, 10 = Intense storm):
+                    </label>
+                    <input type="range" name="intensity" min="1" max="10" value="5" class="intensity-range" oninput="this.nextElementSibling.innerText = this.value + '/10'">
+                    <div class="slider-labels">
+                        <span>1 (Gentle)</span>
+                        <span style="font-weight: 800; color: var(--sage-dark);" id="sliderVal">5/10</span>
+                        <span>10 (Overwhelming)</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.25rem;">
+                    <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem; color: var(--text-secondary);">
+                        Primary Factor / Trigger:
+                    </label>
+                    <select name="trigger_category" class="form-select">
+                        <option value="Study & Exams">📚 Study & Exams</option>
+                        <option value="Career & Work">💼 Career & Job Hunt</option>
+                        <option value="Sleep & Energy">💤 Sleep & Low Energy</option>
+                        <option value="Relationships & Family">🫂 Relationships & Family</option>
+                        <option value="Overthinking & Uncertainty">🌀 Overthinking & Mind Spiral</option>
+                        <option value="General Well-being">🌿 General Well-being</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem; color: var(--text-secondary);">
+                        Brief Thought / Reflection (Optional):
+                    </label>
+                    <textarea name="note" class="form-textarea" rows="2" placeholder="What is taking up space in your head today?"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-sage" style="width: 100%;">
+                    Log Mindful Reflection 🌿
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Diary Snippet, Gratitude & Recent Logs -->
+    <div>
+        <!-- Diary Preview Card -->
+        <div class="card" style="border-left: 4px solid var(--sage);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                <h2 class="card-title" style="margin-bottom: 0;">
+                    <span>📖</span>
+                    <span>Diary Spotlight</span>
+                </h2>
+                <a href="{{ url_for('diary') }}" style="font-size: 0.85rem; color: var(--sage); font-weight: 700; text-decoration: none;">
+                    Open Diary →
+                </a>
+            </div>
+
+            {% if latest_diary %}
+                <div style="background: #FAF9F6; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem;">
+                    <span style="font-size: 0.75rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 50px; background: var(--lavender-light); color: var(--lavender);">
+                        {{ latest_diary.mood_tag }}
+                    </span>
+                    <h4 style="font-size: 1.05rem; font-weight: 700; margin: 0.4rem 0 0.2rem;">{{ latest_diary.title }}</h4>
+                    <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5;">
+                        {{ latest_diary.content[:120] }}{% if latest_diary.content|length > 120 %}...{% endif %}
+                    </p>
+                </div>
+            {% else %}
+                <p style="font-size: 0.88rem; color: var(--text-secondary); font-style: italic;">
+                    No personal diary entries yet. <a href="{{ url_for('diary') }}" style="color: var(--sage); font-weight: 700;">Write your first entry</a> to build your private sanctuary vault.
+                </p>
+            {% endif %}
+        </div>
+
+        <!-- Daily Gratitude Card -->
+        <div class="card">
+            <h2 class="card-title">
+                <span>✨</span>
+                <span>Gratitude & Grounding</span>
+            </h2>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                Even in dark days, one small light anchors the mind:
+            </p>
+
+            <form method="POST" action="{{ url_for('add_gratitude') }}" style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem;">
+                <input type="text" name="content" class="form-input" placeholder="e.g. Warm cup of tea, a kind friend..." required>
+                <button type="submit" class="btn btn-sage" style="padding: 0.5rem 1.2rem;">+ Save</button>
+            </form>
+
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                {% if gratitudes %}
+                    {% for g in gratitudes %}
+                        <div style="background: #FAF9F6; border: 1px solid var(--border); padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: 0.92rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>✨</span>
+                            <span>{{ g.content }}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); font-style: italic;">
+                        No gratitude notes yet. What is one small comfort you had today?
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

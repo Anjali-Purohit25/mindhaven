@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}My Private Diary — MindHaven{% endblock %}
+
+{% block content %}
+<div style="max-width: 860px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+        <div>
+            <span style="font-size: 0.88rem; font-weight: 700; color: var(--sage); text-transform: uppercase; letter-spacing: 1px;">
+                CONFIDENTIAL & SECURE
+            </span>
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.3rem; color: #1F2937; margin-top: 0.2rem;">
+                My Personal Sanctuary Diary 📖
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                A private vault for your uncensored thoughts, memories, tears, and breakthroughs.
+            </p>
+        </div>
+    </div>
+
+    <!-- Write New Diary Entry Card -->
+    <div class="card" style="border: 2px solid #E4DFD5; background: #FFFDFB;">
+        <h2 class="card-title" style="color: var(--sage-dark);">
+            <span>✍️</span>
+            <span>Write a New Diary Entry</span>
+        </h2>
+
+        <form method="POST" action="{{ url_for('create_diary') }}">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.35rem;">
+                        Entry Title:
+                    </label>
+                    <input type="text" name="title" class="form-input" placeholder="e.g. A heavy afternoon, finding my footing..." required>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.35rem;">
+                        Tone / State:
+                    </label>
+                    <select name="mood_tag" class="form-select">
+                        <option value="Reflective">💭 Reflective</option>
+                        <option value="Vulnerable">🌧️ Vulnerable</option>
+                        <option value="Healing">🌱 Healing</option>
+                        <option value="Hopeful">✨ Hopeful</option>
+                        <option value="Exhausted">💤 Exhausted</option>
+                        <option value="Proud">🏆 Proud</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.35rem;">
+                    Dear Diary...
+                </label>
+                <textarea name="content" class="form-textarea" rows="6" placeholder="Pour your mind here without any fear of judgment. This is your safe haven." required></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn btn-sage" style="padding: 0.75rem 1.8rem;">
+                    🔒 Lock Entry into Diary Vault
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0 1.2rem; gap: 1rem; flex-wrap: wrap;">
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem;">Past Journal Entries ({{ entries|length }})</h3>
+
+        <form method="GET" action="{{ url_for('diary') }}" style="display: flex; gap: 0.5rem; flex: 1; max-width: 420px;">
+            <input type="text" name="q" value="{{ search_query }}" class="form-input" placeholder="Search keywords..." style="padding: 0.5rem 0.9rem; font-size: 0.9rem;">
+            <select name="mood" class="form-select" style="padding: 0.5rem 0.9rem; font-size: 0.9rem; flex: 0 0 130px;">
+                <option value="">All Tones</option>
+                <option value="Reflective" {% if mood_filter == 'Reflective' %}selected{% endif %}>Reflective</option>
+                <option value="Vulnerable" {% if mood_filter == 'Vulnerable' %}selected{% endif %}>Vulnerable</option>
+                <option value="Healing" {% if mood_filter == 'Healing' %}selected{% endif %}>Healing</option>
+                <option value="Hopeful" {% if mood_filter == 'Hopeful' %}selected{% endif %}>Hopeful</option>
+                <option value="Exhausted" {% if mood_filter == 'Exhausted' %}selected{% endif %}>Exhausted</option>
+                <option value="Proud" {% if mood_filter == 'Proud' %}selected{% endif %}>Proud</option>
+            </select>
+            <button type="submit" class="btn btn-ghost" style="padding: 0.5rem 1rem;">Filter</button>
+        </form>
+    </div>
+
+    <!-- Entries Timeline -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        {% if entries %}
+            {% for entry in entries %}
+                <div class="card" style="margin-bottom: 0; padding: 1.8rem; position: relative;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem;">
+                        <div>
+                            <span style="font-size: 0.78rem; font-weight: 800; padding: 0.2rem 0.7rem; border-radius: 50px; background: var(--lavender-light); color: var(--lavender); margin-bottom: 0.4rem; display: inline-block;">
+                                {{ entry.mood_tag }}
+                            </span>
+                            <h3 style="font-size: 1.35rem; font-weight: 700; color: #1E293B;">
+                                {{ entry.title }}
+                            </h3>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <span style="font-size: 0.8rem; color: #94A3B8; font-weight: 600;">
+                                📅 {{ entry.created_at.strftime('%B %d, %Y • %I:%M %p') }}
+                            </span>
+
+                            <form method="POST" action="{{ url_for('delete_diary', entry_id=entry.id) }}" onsubmit="return confirm('Are you sure you want to delete this diary entry?');">
+                                <button type="submit" class="btn-ghost" style="border: none; color: #CBD5E1; cursor: pointer; padding: 0.3rem 0.5rem; font-size: 1rem; border-radius: 6px;" title="Delete Entry">
+                                    🗑️
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 1rem; color: #334155; line-height: 1.8; white-space: pre-wrap;">{{ entry.content }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="card" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📖✨</div>
+                <h3 style="font-weight: 700; margin-bottom: 0.4rem;">Your Diary is Waiting</h3>
+                <p style="font-size: 0.95rem;">No entries found. Write your first reflection in the box above whenever you are ready.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

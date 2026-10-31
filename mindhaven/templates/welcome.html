@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-box" style="margin-top: 2rem;">
+    <div style="font-size: 3.5rem; margin-bottom: 0.8rem;">🌿</div>
+    <h1>A Safe Harbor for Your Mind</h1>
+    <p style="max-width: 600px; margin: 0 auto 2rem; font-size: 1.15rem; color: var(--text-secondary);">
+        Track your emotional journey, release heavy thoughts into the void, find grounding when anxiety strikes, and connect through silent empathy.
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 3.5rem;">
+        <a href="{{ url_for('register') }}" class="btn btn-sage" style="padding: 0.9rem 2rem; font-size: 1.05rem;">
+            Step Inside Your Sanctuary
+        </a>
+        <a href="{{ url_for('grounding') }}" class="btn btn-ghost" style="padding: 0.9rem 1.8rem;">
+            Try 4-7-8 Breathing Now 🫁
+        </a>
+    </div>
+
+    <!-- 3 Pillars -->
+    <div class="sanctuary-shortcuts" style="text-align: left;">
+        <div class="shortcut-card">
+            <div class="shortcut-icon">📊</div>
+            <h3 class="shortcut-title">Mindful Tracking</h3>
+            <p class="shortcut-desc">Uncover what triggers your anxiety and celebrate calm days with compassionate SQL analytics.</p>
+        </div>
+
+        <div class="shortcut-card">
+            <div class="shortcut-icon">🔥</div>
+            <h3 class="shortcut-title">The Thought Shredder</h3>
+            <p class="shortcut-desc">Write down intrusive, spiral thoughts and permanently burn them into the void with zero trace.</p>
+        </div>
+
+        <div class="shortcut-card">
+            <div class="shortcut-icon">🤍</div>
+            <h3 class="shortcut-title">Anonymous Empathy</h3>
+            <p class="shortcut-desc">A gentle community wall free of comments or judgment. Give and receive silent virtual hugs.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
